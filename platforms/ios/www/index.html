@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+            
+<!--            <script src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"-->
+<!--                id="sap-ui-bootstrap"-->
+<!--                data-sap-ui-libs="sap.ui.commons, sap.ui.table, sap.m, sap.ui.layout"-->
+<!--                data-sap-ui-theme="sap_bluecrystal">-->
+<!--                </script>-->
+
+            <script src="./resources/sap-ui-core.js"
+                id="sap-ui-bootstrap"
+                data-sap-ui-libs="sap.ui.commons, sap.ui.table, sap.m, sap.ui.layout"
+                data-sap-ui-theme="sap_bluecrystal">
+                </script>
+            
+            <script src="cordova.js"></script>
+            <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1"/>
+            
+            <script>
+                
+                
+                function tomaFoto(){
+                    navigator.camera.getPicture(onSuccess, onFail, { quality: 100,
+                                                destinationType: Camera.DestinationType.DATA_URL
+                                                });
+                }
+            
+            function onSuccess(imageData) {
+                foto = imageData;
+                var image = document.getElementById('myImage');
+                image.src = "data:image/jpeg;base64," + foto;
+                
+                oImage.setSrc("data:image/jpeg;base64," + foto);
+                
+                
+                
+                //var image = document.getElementById('myImage');
+                //image.src = "data:image/jpeg;base64," + imageData;
+            }
+            
+            function onFail(message) {
+                alert('Failed because: ' + message);
+            }
+            
+                </script>
+            
+            <script>
+                function grabar(){
+                    var oResponse = jQuery.sap.sjax({
+                                                    "url"  : "./index.html",
+                                                    "type" : "POST",
+                                                    "data":
+                                                    sap.ui.getCore().getModel().getData()});
+                                                    //alert(oResponse);
+                                                    var content = oForm1.getContent();
+                                                    var content2 = oForm2.getContent();
+                                                    var oEntry = {};
+                                                    
+                                                    oEntry.Titulo = content[2].getValue();
+                                                    oEntry.Compania = content2[1].getSelectedKey();
+                                                    oEntry.NombreAdjunto1 = "foto1.jpg";
+                                                    oEntry.Adjunto1 = foto;
+                                                    
+                                                    //oEntry.Clase = content[4].getSelectedKey();
+                                                    
+                                                    //console.log(content[4]);
+                                                    
+                                                    //oEntry.Cuotas = content[6].getValue();
+                                                    //oEntry.Waers = content[8].getValue();
+                                                    
+                                                    console.log(oEntry);
+                                                   /*
+                                                   oModel.setHeaders({
+                                                     "X-Requested-With": "XMLHttpRequest",
+                                                     "Content-Type": "application/atom+xml",
+                                                     "DataServiceVersion": "2.0",
+                                                     "Accept": "application/atom+xml,application/atomsvc+xml,application/xml",
+                                                     "X-CSRF-Token": header_xcsrf_token
+                                                     });
+                                                    */
+                                                    
+                                                    //var ok = oModel.create('/incidenteSet', oEntry);
+                                                    
+                                                    
+                                                    oModel.create('/incidenteSet', oEntry, null, function(oEntry,response){
+                                                                  alert("Incidente creado correctamente");
+                                                                  },function(){
+                                                                  alert("Incidente no fue creado correctamente");});
+                }
+            </script>
+            
+            <script>
+                var foto;
+                var usuario = "acastrop";
+                var clave = "Enero2009";
+                
+                //var oModel = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZINCIDENTE_SRV/");
+                var oModel = new sap.ui.model.odata.ODataModel("http://acastropardo.ddns.net:8080/sap/opu/odata/sap/ZINCIDENTE_SRV/?sap-client=800",true, usuario, clave, null);
+                
+                 /*oModel.setHeaders({
+                 "X-CSRF-Token": "Fetch"  // auth
+                 });*/
+                 
+            
+            
+            //Create a panel and html instances
+            sap.ui.getCore().setModel(oModel);
+            
+            
+            var oForm1 = new sap.ui.commons.form.SimpleForm();
+            
+            oForm1.setEditable = true;
+            var oTitle = new sap.ui.commons.Title({text: "Ingreso de nuevo incidente"});
+            
+            var ltitulo = new sap.ui.commons.Label({text: "Título"});
+            var titulo = new sap.ui.commons.TextField({value: "Titulo EHS incidente"});
+            
+            var lfecha = new sap.ui.commons.Label({text: "Fecha de ocurrencia"});
+            var fecha = new sap.ui.commons.DatePicker({yyyymmdd: Date.now()});
+            fecha.value = Date.now();
+            
+            var lhora = new sap.ui.commons.Label({text: "Hora de ocurrencia"});
+            var hora = new sap.ui.commons.TextField({value: "09:00:00"});
+            
+            var ldesc = new sap.ui.commons.Label({text: "Descripción del incidente"});
+            var desc = new sap.ui.commons.TextArea();
+            desc.setValue("Que ocurrió");
+            desc.setTooltip("Circunstancias que causaron el incidente");
+            desc.setRows(3);
+            
+            var lacc = new sap.ui.commons.Label({text: "Acciones inmediatas"});
+            var acc = new sap.ui.commons.TextArea();
+            //desc.setValue("Primeras acciones a tomar");
+            desc.setTooltip("Primeras acciones a tomar");
+            desc.setRows(3);
+            
+            
+            oForm1.addContent(oTitle);
+            oForm1.addContent(ltitulo);
+            oForm1.addContent(titulo);
+            oForm1.addContent(lfecha);
+            oForm1.addContent(fecha);
+            oForm1.addContent(lhora);
+            oForm1.addContent(hora);
+            oForm1.addContent(ldesc);
+            oForm1.addContent(desc);
+            oForm1.addContent(lacc);
+            oForm1.addContent(acc);
+            
+            //oForm1.addContent();
+            //oForm1.addContent();
+            
+            
+            var oTabStrip1 = new sap.ui.commons.TabStrip("TabStrip1");
+            oTabStrip1.setWidth("100%");
+            oTabStrip1.setHeight("100%");
+            oTabStrip1.attachClose( function (oEvent) {
+                                   var oTabStrip = oEvent.oSource;
+                                   oTabStrip.closeTab(oEvent.getParameter("index"));
+                                   });
+                                   
+                                   // 1. tab: general data (use createTab)
+                                   
+                                   
+                                   oTabStrip1.createTab("Datos básicos",oForm1);
+                                   
+                                   var oForm2 = new sap.ui.commons.form.SimpleForm();
+                                   
+                                   oForm2.setEditable = true;
+                                   
+                                   var lplanta = new sap.ui.commons.Label({text: "Planta"});
+                                   var planta = new sap.ui.commons.DropdownBox("planta");
+                                   planta.setEditable(true);
+                                   planta.setModel(oModel);
+                                   
+                                   var itemTemplate1 = new sap.ui.core.ListItem({
+                                                                                
+                                                                                key :"{Werks}",
+                                                                                text : "{Name2}"
+                                                                                });
+                                                                                
+                                                                                planta.bindItems("/plantaSet", itemTemplate1);
+                                                                                
+                                                                                planta.setEditable(true);
+                                                                                
+                                                                                var ldrop = new sap.ui.commons.Label({text: "Dropdown"});
+                                                                                
+                                                                                // Create a DropdownBox
+                                                                                var oDropdownBox1 = new sap.ui.commons.DropdownBox("DropdownBox1");
+                                                                                oDropdownBox1.setTooltip("Country");
+                                                                                oDropdownBox1.setEditable(true);
+                                                                                oDropdownBox1.setWidth("200px");
+                                                                                var oItem = new sap.ui.core.ListItem("Country1");
+                                                                                oItem.setText("Canada");
+                                                                                oDropdownBox1.addItem(oItem);
+                                                                                oItem = new sap.ui.core.ListItem("Country2");
+                                                                                oItem.setText("Deutschland");
+                                                                                oDropdownBox1.addItem(oItem);
+                                                                                oItem = new sap.ui.core.ListItem("Country3");
+                                                                                oItem.setText("England");
+                                                                                oDropdownBox1.addItem(oItem);
+                                                                                oItem = new sap.ui.core.ListItem("Country4");
+                                                                                oItem.setText("Россия");
+                                                                                oDropdownBox1.addItem(oItem);
+                                                                                oDropdownBox1.setValue("Deutschland");
+                                                                                
+                                                                                var botonNuevaFoto = new sap.m.Button();
+                                                                                botonNuevaFoto.setText("Tomar Foto");
+                                                                                botonNuevaFoto.setIcon("sap-icon://create");
+                                                                                botonNuevaFoto.setWidth("180px");
+                                                                                //botonNuevo.setHeight("25px");
+                                                                                botonNuevaFoto.attachPress(tomaFoto);
+                                                                                //page1.addContent(botonNuevo);
+                                                                                
+                                                                                var botonGrabar = new sap.m.Button();
+                                                                                botonGrabar.setText("Enviar Solicitud");
+                                                                                botonGrabar.setIcon("sap-icon://save");
+                                                                                botonGrabar.attachPress(grabar);
+                                                                                
+                                                                                oForm2.addContent(lplanta);
+                                                                                oForm2.addContent(planta);
+                                                                                oForm2.addContent(ldrop);
+                                                                                //oForm2.addContent(oDropdownBox1);
+                                                                                oForm2.addContent(botonNuevaFoto);
+                                                                                oForm2.addContent(botonGrabar);
+                                                                                
+                                                                                
+                                                                                var oImage = new sap.ui.commons.Image("i1");
+                                                                                //oImage.setSrc("images/FlowersAndWesp.jpg");
+                                                                                //oImage.setTooltip("Summer 2001, an syrphid fly on a chrysantemum.");
+                                                                                //oImage.setDecorative(false);
+                                                                                oImage.setWidth("320px");
+                                                                                oImage.setHeight("240px");
+                                                                                //oImage.placeAt("content");
+                                                                                
+                                                                                oForm2.addContent(oImage);
+                                                                                
+                                                                                // 2. tab: address data (use separate tab element)
+                                                                                oTab2 = new sap.ui.commons.Tab("tab2");
+                                                                                oTab2.setTooltip("address data");
+                                                                                oTab2.setTitle(new sap.ui.core.Title("Title2",{text:"Ubicación"}));
+                                                                                
+                                                                                
+                                                                                oTab2.addContent(oForm2);
+                                                                                oTabStrip1.addTab(oTab2);
+                                                                                
+                                                                                oTabStrip1.setModel(oModel);
+                                                                                
+                                                                                var page1 = new sap.m.Page({
+                                                                                                           title: "Registro de nuevo incidente",
+                                                                                                           content : oTabStrip1
+                                                                                                           });
+                                                                                                           
+                                                                                                           var app = new sap.m.App();
+                                                                                                           
+                                                                                                           app.setModel(oModel);
+                                                                                                           
+                                                                                                           app.addPage(page1);
+                                                                                                           
+                                                                                                           app.placeAt("content");
+                </script>
+            
+            </head>
+    <body class="sapUiBody" role="application">
+        <div id="content"></div>
+        <img id="myImage" name="name">
+            </body>
+</html>
